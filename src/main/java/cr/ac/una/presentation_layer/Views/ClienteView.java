@@ -24,7 +24,7 @@ public class ClienteView {
     private JPanel NameLabelPanel;
     private JPanel NameTextFieldPanel;
     private JLabel NameLabel;
-    private JTextField textField1;
+    private JTextField NameTextField;
     private JPanel PhoneLabelPanel;
     private JPanel PhonePanel;
     private JPanel PhoneTextFieldPanel;
@@ -34,16 +34,16 @@ public class ClienteView {
     private JPanel EmailLabelPanel;
     private JPanel EmailTextFieldPanel;
     private JLabel EmailLabel;
-    private JTextField LabelTextField;
+    private JTextField EmailTextField;
     private JPanel AdressLabelPanel;
     private JPanel AdressTextFieldPanel;
-    private JTextField EmailTextField;
+    private JTextField AddressTextField;
     private JTable table1;
     private JButton ClearButton;
     private JButton borrarButton;
     private JButton UpdateButton;
     private JButton AddButton;
-    private JLabel AddressTextField;
+    private JLabel AddressLabel;
     private JScrollPane ClienteScroll;
 
     // Dependencias
@@ -125,10 +125,10 @@ public class ClienteView {
     private void onClear() {
         table1.clearSelection();
         IdTextFIeld.setText("");
-        textField1.setText("");
+        NameTextField.setText("");
         PhoneTextField.setText("");
+        AddressTextField.setText("");
         EmailTextField.setText("");
-        LabelTextField.setText("");
         IdTextFIeld.requestFocus();
     }
 
@@ -141,10 +141,10 @@ public class ClienteView {
         if (c == null) return;
 
         IdTextFIeld.setText(String.valueOf(c.getId()));
-        textField1.setText(c.getNombreCompleto());
+        NameTextField.setText(c.getNombreCompleto());
         PhoneTextField.setText(c.getTelefono());
+        AddressTextField.setText(c.getDireccion());
         EmailTextField.setText(c.getEmail());
-        LabelTextField.setText(c.getDireccion());
     }
 
     // ====== Lectura/validación de formulario ======
@@ -155,10 +155,10 @@ public class ClienteView {
     private DatosForm readForm() {
         DatosForm d = new DatosForm();
         d.id    = orDefault(parseInt(IdTextFIeld.getText()), -1);
-        d.nombre= safe(textField1.getText());
+        d.nombre= safe(NameTextField.getText());
         d.tel   = safe(PhoneTextField.getText());
-        d.email = safe(EmailTextField.getText());
-        d.dir   = safe(LabelTextField.getText());
+        d.dir = safe(AddressTextField.getText());
+        d.email   = safe(EmailTextField.getText());
 
         if (d.id <= 0) throw new IllegalArgumentException("El ID debe ser mayor que 0.");
         if (d.nombre.isEmpty()) throw new IllegalArgumentException("El nombre es obligatorio.");

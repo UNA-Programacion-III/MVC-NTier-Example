@@ -4,10 +4,14 @@ import cr.ac.una.domain_layer.Cliente;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +29,24 @@ public class ClienteFileStore implements IFileStore<Cliente>{
         List<Cliente> out = new ArrayList<>();
         if (xmlFile.length() == 0) return out;
 
-        try (FileInputStream in = new FileInputStream(xmlFile)) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(xmlFile);
+
             JAXBContext ctx = JAXBContext.newInstance(Cliente.class);
             Unmarshaller u = ctx.createUnmarshaller();
-            XMLInputFactory xif = XMLInputFactory.newFactory();
-            XMLStreamReader xr = xif.createXMLStreamReader(in);
 
-            while (xr.hasNext()) {
-                int ev = xr.next();
-                if (ev == XMLStreamConstants.START_ELEMENT && "cliente".equals(xr.getLocalName())) {
-                    // Unmarshal del elemento actual
-                    Cliente c = u.unmarshal(xr, Cliente.class).getValue();
-                    out.add(c);
+            NodeList clienteNodes = doc.getElementsByTagName("cliente");
+
+            for (int i = 0; i < clienteNodes.getLength(); i++) {
+                Node clienteNode = clienteNodes.item(i);
+                if (clienteNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Cliente cliente = (Cliente) u.unmarshal(clienteNode);
+                    out.add(cliente);
                 }
             }
-            xr.close();
+
         } catch (Exception ex) {
             System.err.println("[WARN] Error leyendo " + xmlFile + ": " + ex.getMessage());
             ex.printStackTrace();
